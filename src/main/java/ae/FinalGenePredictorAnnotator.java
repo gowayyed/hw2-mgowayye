@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import misc.Base;
 import misc.Base.Tag;
@@ -16,12 +17,13 @@ import misc.Config;
 
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
+import ts.PredictedGene;
 import ts.Sentence;
-import cc.mallet.types.Sequence;
 
 /**
  * This analysis engine is responsible for loading a CRF model and using it to predict gene names,
@@ -36,13 +38,17 @@ public class FinalGenePredictorAnnotator extends JCasAnnotator_ImplBase {
    */
   private FileWriter outStream;
 
-  
+  private ArrayList<PredictedGene> finalGenes;
+
+  public static final String PROCESSOR_ID = "Final";
+
   /**
    * The main process method that loads the model, predict the gene names and save the predictions
    * to a file.
    */
   @Override
   public void process(JCas aJCas) throws AnalysisEngineProcessException {
+    finalGenes = new ArrayList<PredictedGene>();
     try {
       outStream = new FileWriter(new File(Config.outputFilename));
     } catch (IOException e) {
@@ -53,20 +59,52 @@ public class FinalGenePredictorAnnotator extends JCasAnnotator_ImplBase {
     Sentence sen;
     int size;
     FSArray genes;
+    PredictedGene gene;
+    int sid = 0;
     while (fs.hasNext()) {
       Annotation ann = fs.next();
       if (ann.getClass() == Sentence.class) {
-        sen = (Sentence) ann; 
+        System.out.println(sid++);
+        sen = (Sentence) ann;
         sentences.add(sen);
         genes = sen.getPredictedGenes();
         size = genes.size();
-        for(int i = 0; i < size; i++)
-        {
-          genes.get(i);
+        for (int i = 0; i < size; i++) {
+          gene = (PredictedGene) genes.get(i);
+          // I am just oring the two processors
+          if (gene.getCasProcessorId() == DictionaryAnnotator.PROCESSOR_ID
+          // ||gene.getCasProcessorId() == TestingAnnotator.PROCESSOR_ID
+          )
+          finalGenes.add(gene);
+//          addOrMergePredictedGene(gene);
         }
       }
     }
+    writeFinalPredictionsToFile();
     evaluate();
+  }
+
+  @SuppressWarnings("static-access")
+  public void addOrMergePredictedGene(PredictedGene gene) {
+    List<PredictedGene> overlapping = new ArrayList<PredictedGene>();
+    for (int i = 0; i < finalGenes.size(); i++) {
+      if (gene.overlaps(finalGenes.get(i)))
+        overlapping.add(finalGenes.get(i));
+    }
+    if (overlapping.size() == 0) {
+      finalGenes.add(gene);
+    } else {
+      for (PredictedGene og : overlapping) {
+        finalGenes.remove(og);
+        try {
+          finalGenes.add(new PredictedGene(this.PROCESSOR_ID, gene.getSentence(), Math.min(
+                  gene.getStartIndex(), og.getStartIndex()), Math.max(gene.getEndIndex(),
+                  og.getEndIndex()), 1));
+        } catch (CASException e) {
+          e.printStackTrace();
+        }
+      }
+    }
   }
 
   /**
@@ -129,19 +167,16 @@ public class FinalGenePredictorAnnotator extends JCasAnnotator_ImplBase {
    * @param sentence
    * @param predicted
    */
-  private void writeMentions(Sentence sentence, Sequence predicted) {
-    for (int i = 0; i < predicted.size(); i++) {
-      if ("B".equals(predicted.get(i))) { // each mention starts with B and continues until the next
-                                          // O
-        int en = i + 1;
-        while (en < predicted.size() && "I".equals(predicted.get(en)))
-          en++;
-        writePrediction(sentence, i, en);
-        i = en - 1;
-      }
+  private void writeFinalPredictionsToFile() {
+    for (PredictedGene gene : finalGenes)
+      writePrediction(gene.getSentence(), gene.getStartIndex(), gene.getEndIndex());
+    try {
+      outStream.close();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
-  
+
   /**
    * writes the predictions in the sentence to the predictions file
    * 

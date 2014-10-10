@@ -11,8 +11,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Tue Oct 07 16:18:28 EDT 2014
- * XML source: /home/gowayyed/workspace/11791/hw2-mgowayye/src/main/resources/descriptors/deiis_types.xml
+ * Updated by JCasGen Tue Oct 07 21:32:14 EDT 2014
+ * XML source: /home/gowayyed/workspace/11791/hw2-mgowayye/src/main/resources/hw2-mgowayye-aae.xml
  * @generated */
 public class Mention extends Annotation {
   /** @generated
@@ -154,7 +154,7 @@ public class Mention extends Annotation {
     if (Mention_Type.featOkTst && ((Mention_Type)jcasType).casFeat_sentence == null)
       jcasType.jcas.throwFeatMissing("sentence", "ts.Mention");
     jcasType.ll_cas.ll_setRefValue(addr, ((Mention_Type)jcasType).casFeatCode_sentence, jcasType.ll_cas.ll_getFSRef(v));}    
-              /**
+                                /**
    * compares two {@link Mention} objects and returns true if they are equal.
    * 
    * @param mention2

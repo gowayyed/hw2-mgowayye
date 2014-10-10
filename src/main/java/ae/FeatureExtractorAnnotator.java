@@ -49,9 +49,11 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
   @Override
   public void process(JCas aJCas) throws AnalysisEngineProcessException {
     Iterator<Annotation> fs = aJCas.getAnnotationIndex().iterator();
+    int i = 0;
     while (fs.hasNext()) {
       Annotation ann = fs.next();
       if (ann.getClass() == Sentence.class) {
+        System.out.println(i++);
         // here we should tokenize and add a feature vector for each token
         extractFeatures((Sentence) ann);
       }
@@ -68,7 +70,8 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
 
   private void extractFeatures(Sentence sentence) {
     Properties props = new Properties();
-    props.put("annotators", "tokenize, ssplit, pos, lemma");
+//    props.put("annotators", "tokenize, ssplit, pos, lemma");
+    props.put("annotators", "tokenize, ssplit");
     StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
     // read some text in the text variable

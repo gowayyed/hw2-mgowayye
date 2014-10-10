@@ -11,8 +11,8 @@ import org.apache.uima.jcas.cas.DoubleArray;
 import org.apache.uima.jcas.cas.StringArray;
 
 /** 
- * Updated by JCasGen Tue Oct 07 16:18:28 EDT 2014
- * XML source: /home/gowayyed/workspace/11791/hw2-mgowayye/src/main/resources/descriptors/deiis_types.xml
+ * Updated by JCasGen Tue Oct 07 21:32:14 EDT 2014
+ * XML source: /home/gowayyed/workspace/11791/hw2-mgowayye/src/main/resources/hw2-mgowayye-aae.xml
  * @generated */
 public class Token extends DocumentAnnotation {
   /**
@@ -97,6 +97,13 @@ public class Token extends DocumentAnnotation {
    * @generated modifiable 
    */
   private void readObject() {/* default - does nothing empty block */
+    try {
+      setFeatureNames(new StringArray(this.getCAS().getJCas(), 0));
+      setFeatureVector(new DoubleArray(this.getCAS().getJCas(), 0));
+    } catch (CASException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   // *--------------*
@@ -317,7 +324,7 @@ public class Token extends DocumentAnnotation {
       jcasType.jcas.throwFeatMissing("featureNames", "ts.Token");
     jcasType.jcas.checkArrayBounds(jcasType.ll_cas.ll_getRefValue(addr, ((Token_Type)jcasType).casFeatCode_featureNames), i);
     jcasType.ll_cas.ll_setStringArrayValue(jcasType.ll_cas.ll_getRefValue(addr, ((Token_Type)jcasType).casFeatCode_featureNames), i, v);}
-              /**
+                                /**
    * gets the text of the {@link Token}
    * 
    * @return

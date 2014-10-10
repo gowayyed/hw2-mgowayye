@@ -43,7 +43,7 @@ import cc.mallet.types.Sequence;
  */
 public class TestingAnnotator extends JCasAnnotator_ImplBase {
 
-  private final String PROCESSOR_ID = "CRF_Model";
+  public static final String PROCESSOR_ID = "CRFModel";
 
   /**
    * The stream to write the predictions to.
@@ -198,42 +198,5 @@ public class TestingAnnotator extends JCasAnnotator_ImplBase {
     } catch (CASException e) {
       e.printStackTrace();
     }
-  }
-
-  /**
-   * writes the predictions in the sentence to the predictions file
-   * 
-   * @param sentence
-   * @param st
-   * @param en
-   */
-  private void writePrediction(Sentence sentence, int st, int en) {
-    try {
-      outStream.write((sentence.getId() + "|").toCharArray());
-      outStream.write((getPreceedingChars(sentence.getText(), sentence.getTokens(st)
-              .getStartIndex()) + " ").toCharArray());
-      outStream.write((getPreceedingChars(sentence.getText(), sentence.getTokens(en - 1)
-              .getEndIndex() - 1) + "|").toCharArray());
-      outStream.write((sentence.getText().substring(sentence.getTokens(st).getStartIndex(),
-              sentence.getTokens(en - 1).getEndIndex()) + "\n").toCharArray());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * get the count of the preceding characters for a specific index in the string.
-   * 
-   * @param text
-   * @param charIndex
-   * @return
-   */
-  private int getPreceedingChars(String text, int charIndex) {
-    int c = 0;
-    for (int i = 0; i < charIndex; i++) {
-      if (!Character.isWhitespace(text.charAt(i)))
-        c++;
-    }
-    return c;
   }
 }
