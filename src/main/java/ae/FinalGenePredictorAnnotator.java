@@ -26,8 +26,7 @@ import ts.PredictedGene;
 import ts.Sentence;
 
 /**
- * This analysis engine is responsible for loading a CRF model and using it to predict gene names,
- * then evaluate the predictions and saves them to an output file.
+ * This analysis engine is responsible for combining the CRF Model with the dictionary model and writing the final objects.
  * 
  * @author gowayyed
  *
@@ -72,11 +71,9 @@ public class FinalGenePredictorAnnotator extends JCasAnnotator_ImplBase {
         for (int i = 0; i < size; i++) {
           gene = (PredictedGene) genes.get(i);
           // I am just oring the two processors
-          if (gene.getCasProcessorId() == DictionaryAnnotator.PROCESSOR_ID
-          // ||gene.getCasProcessorId() == TestingAnnotator.PROCESSOR_ID
+          if (gene.getCasProcessorId() == DictionaryAnnotator.PROCESSOR_ID ||gene.getCasProcessorId() == TestingAnnotator.PROCESSOR_ID
           )
-          finalGenes.add(gene);
-//          addOrMergePredictedGene(gene);
+            addOrMergePredictedGene(sen, gene);
         }
       }
     }
@@ -85,10 +82,11 @@ public class FinalGenePredictorAnnotator extends JCasAnnotator_ImplBase {
   }
 
   @SuppressWarnings("static-access")
-  public void addOrMergePredictedGene(PredictedGene gene) {
+  public void addOrMergePredictedGene(Sentence sent, PredictedGene gene) {
     List<PredictedGene> overlapping = new ArrayList<PredictedGene>();
     for (int i = 0; i < finalGenes.size(); i++) {
-      if (gene.overlaps(finalGenes.get(i)))
+      if (gene.getSentence() == finalGenes.get(i).getSentence() && 
+      gene.overlaps(finalGenes.get(i)))
         overlapping.add(finalGenes.get(i));
     }
     if (overlapping.size() == 0) {
@@ -168,8 +166,14 @@ public class FinalGenePredictorAnnotator extends JCasAnnotator_ImplBase {
    * @param predicted
    */
   private void writeFinalPredictionsToFile() {
+  int i = 0;
     for (PredictedGene gene : finalGenes)
+    {
+    System.out.println("w\t" + i++);
+    if(i==7)
+    System.out.println();
       writePrediction(gene.getSentence(), gene.getStartIndex(), gene.getEndIndex());
+    }
     try {
       outStream.close();
     } catch (IOException e) {
@@ -193,7 +197,7 @@ public class FinalGenePredictorAnnotator extends JCasAnnotator_ImplBase {
               .getEndIndex() - 1) + "|").toCharArray());
       outStream.write((sentence.getText().substring(sentence.getTokens(st).getStartIndex(),
               sentence.getTokens(en - 1).getEndIndex()) + "\n").toCharArray());
-    } catch (IOException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }

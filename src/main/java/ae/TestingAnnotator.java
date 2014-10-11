@@ -46,22 +46,11 @@ public class TestingAnnotator extends JCasAnnotator_ImplBase {
   public static final String PROCESSOR_ID = "CRFModel";
 
   /**
-   * The stream to write the predictions to.
-   */
-  private FileWriter outStream;
-
-  /**
    * The main process method that loads the model, predict the gene names and save the predictions
    * to a file.
    */
   @Override
   public void process(JCas aJCas) throws AnalysisEngineProcessException {
-
-    try {
-      outStream = new FileWriter(new File(Config.outputFilename));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
     Iterator<Annotation> fs = aJCas.getAnnotationIndex().iterator();
     ArrayList<Sentence> sentences = new ArrayList<Sentence>();
     while (fs.hasNext()) {
@@ -155,11 +144,6 @@ public class TestingAnnotator extends JCasAnnotator_ImplBase {
       Sequence predicted = crf.getMaxLatticeFactory()
               .newMaxLattice(crf, (FeatureVectorSequence) instance.getData()).bestOutputSequence();
       writeMentions(sentence, predicted);
-    }
-    try {
-      outStream.close();
-    } catch (IOException e) {
-      e.printStackTrace();
     }
   }
 

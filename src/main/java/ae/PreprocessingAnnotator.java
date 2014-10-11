@@ -26,13 +26,13 @@ public class PreprocessingAnnotator extends JCasAnnotator_ImplBase {
     int i = 0;
     char ch = ' ';
     int documentLength = text.length();
-    int ind = 0;
+//    int ind = 0;
     String line = "";
     // loop over every character
     while (i < documentLength) {
       ch = text.charAt(i);
       if (ch == '\n') {
-//        if(ind++ > 50)
+//        if(ind++ > 1000)
 //          break;
         line = lineBuffer.toString();
         lineBuffer.delete(0, lineBuffer.length());

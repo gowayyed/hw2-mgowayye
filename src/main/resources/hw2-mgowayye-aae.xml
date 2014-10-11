@@ -13,8 +13,8 @@
     <delegateAnalysisEngine key="aeFinalGenePredictorAnnotatorDescriptor">
       <import name="descriptors.aeFinalGenePredictorAnnotatorDescriptor"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="aeFeatureExtractorDescriptor">
-      <import name="descriptors.aeFeatureExtractorDescriptor"/>
+    <delegateAnalysisEngine key="CRF-Model-aae">
+      <import name="descriptors.CRF-Model-aae"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -27,7 +27,7 @@
     <flowConstraints>
       <fixedFlow>
         <node>aePreprocessingAnnotatorDescriptor</node>
-        <node>aeFeatureExtractorDescriptor</node>
+        <node>CRF-Model-aae</node>
         <node>aeDictionaryAnnotatorDescriptor</node>
         <node>aeFinalGenePredictorAnnotatorDescriptor</node>
       </fixedFlow>

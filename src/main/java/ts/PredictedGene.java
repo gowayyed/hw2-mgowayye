@@ -12,7 +12,7 @@ import edu.cmu.deiis.types.Annotation;
 
 
 /** 
- * Updated by JCasGen Tue Oct 07 21:32:14 EDT 2014
+ * Updated by JCasGen Fri Oct 10 21:33:36 EDT 2014
  * XML source: /home/gowayyed/workspace/11791/hw2-mgowayye/src/main/resources/hw2-mgowayye-aae.xml
  * @generated */
 public class PredictedGene extends Annotation {
@@ -150,7 +150,7 @@ public class PredictedGene extends Annotation {
     if (PredictedGene_Type.featOkTst && ((PredictedGene_Type)jcasType).casFeat_endIndex == null)
       jcasType.jcas.throwFeatMissing("endIndex", "ts.PredictedGene");
     jcasType.ll_cas.ll_setIntValue(addr, ((PredictedGene_Type)jcasType).casFeatCode_endIndex, v);}    
-                  //taken from BANNER
+                    //taken from BANNER
  public boolean overlaps(PredictedGene gene2) {
    return this.getEndIndex() > gene2.getStartIndex()
            && this.getStartIndex() < gene2.getEndIndex();

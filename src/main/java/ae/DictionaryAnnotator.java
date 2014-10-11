@@ -5,14 +5,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
-import misc.Base;
-import misc.Base.Tag;
 import misc.Config;
 
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
@@ -27,7 +25,7 @@ import ts.Sentence;
 import ts.Token;
 
 /**
- * This analysis engine is responsible for searching a dictionary of gene names for the gene
+ * This annotator is responsible for searching a dictionary of gene names for the gene and create {@link PredictedGene} annotations.
  * 
  * @author gowayyed
  *
@@ -36,12 +34,9 @@ public class DictionaryAnnotator extends JCasAnnotator_ImplBase {
 
   public static final String PROCESSOR_ID = "DicrionaryModel";
 
-  /**
-   * The stream to write the predictions to.
-   */
-  private FileWriter outStream;
+  private InputStream is;
 
-  private ArrayList<String> dictionary;
+  private BufferedReader br;
 
   /**
    * The main process method that loads the model, predict the gene names and save the predictions
@@ -49,12 +44,6 @@ public class DictionaryAnnotator extends JCasAnnotator_ImplBase {
    */
   @Override
   public void process(JCas aJCas) throws AnalysisEngineProcessException {
-    dictionary = new ArrayList<String>();
-    try {
-      outStream = new FileWriter(new File(Config.outputFilename));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
     Iterator<Annotation> fs = aJCas.getAnnotationIndex().iterator();
     ArrayList<Sentence> sentences = new ArrayList<Sentence>();
     while (fs.hasNext()) {
@@ -63,22 +52,23 @@ public class DictionaryAnnotator extends JCasAnnotator_ImplBase {
         sentences.add((Sentence) ann);
       }
     }
-    // loadDictionary();
+    try {
+      loadDictionary();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     searchForGenes(sentences);
   }
 
-  private void loadDictionary() {
-    BufferedReader br;
-    try {
-      br = new BufferedReader(new FileReader(new File(Config.dictionaryFilename)));
-      String line;
-      while ((line = br.readLine()) != null) {
-        dictionary.add(line.trim());
-      }
-      br.close();
-    } catch (Exception e) {
-      e.printStackTrace();
+  private void loadDictionary() throws IOException {
+    is = DictionaryAnnotator.class.getClassLoader().getResourceAsStream(Config.dictionaryFilename);
+    br = new BufferedReader(new InputStreamReader(is, "utf-8"));
+    System.out.println("Reading the first time:");
+    String ln;
+    while ((ln = br.readLine()) != null) {
+      System.out.println(ln);
     }
+    br.close();
   }
 
   /**
@@ -97,11 +87,6 @@ public class DictionaryAnnotator extends JCasAnnotator_ImplBase {
         e.printStackTrace();
       }
     }
-    try {
-      outStream.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   private ArrayList<PredictedGene> extractGenesFromDictionary(Sentence sentence)
@@ -115,14 +100,15 @@ public class DictionaryAnnotator extends JCasAnnotator_ImplBase {
     Token t;
     String gname = "";
     int f = -1, st = -1, en = -1;
-    BufferedReader br;
     try {
-      br = new BufferedReader(new FileReader(new File(Config.dictionaryFilename)));
+      is = DictionaryAnnotator.class.getResourceAsStream("/" + Config.dictionaryFilename);
+      br = new BufferedReader(new InputStreamReader(is, "utf-8"));
+//br = new BufferedReader(new FileReader(new File(Config.dictionaryFilename)));
       while ((gname = br.readLine()) != null) {
         gname = gname.trim();
         f = sentence.getText().indexOf(gname);
         if (f > -1)
-          for (int i = 0; i < tokens.length || (st != -1 && en != -1); i++) {
+          for (int i = 0; i < tokens.length && (st == -1 || en == -1); i++) {
             t = tokens[i];
             if (t.getStartIndex() == f)
               st = i;

@@ -70,8 +70,8 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
 
   private void extractFeatures(Sentence sentence) {
     Properties props = new Properties();
-//    props.put("annotators", "tokenize, ssplit, pos, lemma");
-    props.put("annotators", "tokenize, ssplit");
+    props.put("annotators", "tokenize, ssplit, pos, lemma");
+//    props.put("annotators", "tokenize, ssplit");
     StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
     // read some text in the text variable

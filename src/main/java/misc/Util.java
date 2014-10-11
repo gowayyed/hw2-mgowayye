@@ -2,8 +2,10 @@ package misc;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 
+import ae.TestingAnnotator;
 import cc.mallet.fst.CRF;
 
 /**
@@ -20,11 +22,10 @@ public class Util {
    * @return
    */
   public static CRF loadModel() {
-    FileInputStream fileIn;
+    InputStream is = TestingAnnotator.class.getClassLoader().getResourceAsStream(Config.modelFile);
     CRF crf = null;
     try {
-      fileIn = new FileInputStream(Config.modelFile);
-      ObjectInputStream in = new ObjectInputStream(fileIn);
+      ObjectInputStream in = new ObjectInputStream(is);
       crf = (CRF) in.readObject();
       in.close();
     } catch (Exception e) {

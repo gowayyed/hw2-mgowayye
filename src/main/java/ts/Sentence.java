@@ -13,7 +13,7 @@ import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 
 /** 
- * Updated by JCasGen Tue Oct 07 21:32:14 EDT 2014
+ * Updated by JCasGen Fri Oct 10 21:33:36 EDT 2014
  * XML source: /home/gowayyed/workspace/11791/hw2-mgowayye/src/main/resources/hw2-mgowayye-aae.xml
  * @generated */
 public class Sentence extends Annotation {
@@ -330,7 +330,7 @@ public class Sentence extends Annotation {
       jcasType.jcas.throwFeatMissing("predictedGenes", "ts.Sentence");
     jcasType.jcas.checkArrayBounds(jcasType.ll_cas.ll_getRefValue(addr, ((Sentence_Type)jcasType).casFeatCode_predictedGenes), i);
     jcasType.ll_cas.ll_setRefArrayValue(jcasType.ll_cas.ll_getRefValue(addr, ((Sentence_Type)jcasType).casFeatCode_predictedGenes), i, jcasType.ll_cas.ll_getFSRef(v));}
-                    /**
+                      /**
    * add {@link Token} to the list of tokens.
    * 
    * @param token

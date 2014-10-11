@@ -11,7 +11,7 @@ import org.apache.uima.jcas.cas.DoubleArray;
 import org.apache.uima.jcas.cas.StringArray;
 
 /** 
- * Updated by JCasGen Tue Oct 07 21:32:14 EDT 2014
+ * Updated by JCasGen Fri Oct 10 21:33:36 EDT 2014
  * XML source: /home/gowayyed/workspace/11791/hw2-mgowayye/src/main/resources/hw2-mgowayye-aae.xml
  * @generated */
 public class Token extends DocumentAnnotation {
@@ -324,7 +324,7 @@ public class Token extends DocumentAnnotation {
       jcasType.jcas.throwFeatMissing("featureNames", "ts.Token");
     jcasType.jcas.checkArrayBounds(jcasType.ll_cas.ll_getRefValue(addr, ((Token_Type)jcasType).casFeatCode_featureNames), i);
     jcasType.ll_cas.ll_setStringArrayValue(jcasType.ll_cas.ll_getRefValue(addr, ((Token_Type)jcasType).casFeatCode_featureNames), i, v);}
-                                /**
+                                  /**
    * gets the text of the {@link Token}
    * 
    * @return
