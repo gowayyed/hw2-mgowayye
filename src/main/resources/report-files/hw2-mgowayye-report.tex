@@ -13,7 +13,9 @@ In this document, I report briefly my implementation for the logical architectur
 
 
 \section{System Architecture}
-\subsection{CRF Model (same as in HW1 report)}
+\subsection{Implementing aggregate analysis engines}
+I implemented two aggregate analysis engines. First one: CRF-Model that holds all annotators related with the CRF model. The second one: hw2-mgowayye-aae that holds everything.
+\subsection{CRF Model}
 \textbf{The addition in this homework is that this model creates a new type of annotation called PredictedGene that inherits from the Annotation you provided and has a confidence and processor ID.}
 
 Figure \ref{fram} shows the basic architecture of the system. As in the UIMA tutorial, it is recommended to use Analysis Engines instead of CAS Consumers. I have a collection reader that reads the document. Then a preprocessing annotator that creates Sentence objects. Then the feature extraction annotator, that do tokenization, POS tagging and several other features as described in the next section. Based on whether we run a training or a testing program, we will use either training or testing Analysis Engines.\\
@@ -40,9 +42,10 @@ Benefits of separating the features extraction from the learning:
   \caption{A simple class diagram for the Type System I used. The sentence represents a line of the input and the Token is a token in the Sentence. A Mention represents a gene mention.}
 \end{figure}
 \subsection{Dictionary Model}
+This annotator is responsible for searching a dictionary of gene names for the gene and create PredictedGene annotations.
 
 \subsection{Combining the two models}
-I combine the two models by running a Final annotator that aggregates the genes detected by both annotators. 
+I combine the two models by running a Final annotator that aggregates the genes detected by both annotators.
 \section{Data Flow and Algorithm}
 \subsection{Data Flow}
 \subsubsection{BioCollectionReader}
@@ -65,10 +68,8 @@ This annotator is generic to work with either training or testing. It is also in
 \textbf{Output:} List of Sentence objects, each has list of tokens and each token has list of feature values.\\
 
 
-
-
 \subsubsection{TrainingAnnotator}
-\footnote{TrainingAnnotator and TestingAnnotator should not have been named Annotators as they are not annotators, they work as CAS consumers. I didn't have time to update them in code and tests everything again. As recommended from the UIMA tutorial, I used Analysis Engines instead of CAS consumers.}
+
 This analysis engine is responsible for training a CRF model using Mallet library and stores the model to a file.\\
 \textbf{Input:} JCas with List of Sentence objects, each has list of tokens and each token has list of feature values.\\
 \textbf{Output:} CRF model file trained using the features extracted in the previous step.\\
@@ -77,6 +78,14 @@ This analysis engine is responsible for training a CRF model using Mallet librar
  This analysis engine is responsible for loading a CRF model and using it to predict gene names, then evaluate the predictions and saves them to an output file.\\
 \textbf{Input:} JCas with List of Sentence objects, each has list of tokens and each token has list of feature values.\\
 \textbf{Output:} Detected gene names in an output file and F1-score calculated and printed to the console.\\
+
+\subsubsection{DictionaryAnnotator}
+This annotator is responsible for searching a dictionary of gene names for the gene and create PredictedGene annotations.
+\textbf{Input:} JCas with List of Sentence objects, each has list of tokens and each token has list of feature values.\\
+\textbf{Output:} Add PredictedGene objects to the sentences that found on them.\\
+
+\subsubsection{FinalGenePredictorAnnotator}
+This analysis engine is responsible for combining the CRF Model with the dictionary model and writing the final output file.
 
 
 \subsection{Algorithm}
@@ -88,9 +97,6 @@ For testing the CRF model provides the label that has the highest probability fo
 I used the \textit{sample.in} and \textit{sample.out} files to train and test the model. I gradually added features to make sure that more features is reflected into an increase in the F1-score.\\
 
 When training using only the words as features, I got \textbf{0.366} F1-score. Adding POS tagger increased the F1-score to become \textbf{0.702}. After adding regular expression features (find their details in ae.FeatureExtractorAnnotator::addRegExFeatures), my final F1-score became \textbf{0.893}.
-
-\subsection{If you failed to run my code}
-Check the paths at \textit{Config} class, if the problem is in the paths.
 
 \begin{thebibliography}{9}
 
